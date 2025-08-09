@@ -1,2 +1,1 @@
-NEXT GEN CODERS have initiated a mission 
-
+Hackathon prject are included in this directory.
