@@ -1,0 +1,18 @@
+:root{--bg:#071726;--card:#0b1220;--accent:#06b6d4;--muted:#94a3b8}
+*{box-sizing:border-box;font-family:Inter,system-ui,Arial;}
+body{margin:0;background:linear-gradient(180deg,#07102a 0%, #071726 100%);color:#e6eef8;}
+.app{max-width:980px;margin:28px auto;padding:20px;}
+.header{display:flex;align-items:center;justify-content:space-between;}
+.title{font-size:20px;font-weight:700;}
+.card{background:var(--card);padding:18px;border-radius:12px;}
+.controls{display:flex;gap:12px;margin-top:14px;align-items:center;}
+.btn{padding:10px 14px;border-radius:8px;border:0;background:var(--accent);color:white;cursor:pointer;}
+.list{margin-top:14px;display:grid;grid-template-columns:1fr 320px;gap:14px;}
+.reports{background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;max-height:420px;overflow:auto;}
+.report{padding:10px;border-radius:8px;margin-bottom:8px;background:rgba(0,0,0,0.2);}
+.detail{background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;max-height:420px;overflow:auto;}
+.small{font-size:13px;color:var(--muted);}
+.badge{padding:6px 8px;border-radius:999px;font-weight:700;}
+.badge.safe{background:#064e3b;color:#bbf7d0;}
+.badge.suspicious{background:#78350f;color:#fff4dc;}
+.badge.scam{background:#6b0217;color:#ffdada;}
