@@ -1,29 +1,49 @@
-Voice Scam Shield - v2 (OpenAI ASR + LLM)
-----------------------------------------
+# 🎙️ Voice Scam Shield – v2 (OpenAI ASR + LLM)
 
-This repo is a ready-to-run local prototype:
-- FastAPI backend (OpenAI Whisper + OpenAI LLM classification)
-- React frontend (Vite)
-- Docker Compose to run backend + frontend
+## 📌 Overview
+**Voice Scam Shield – v2** is a ready-to-run local prototype that detects potential scam calls from audio input.
 
-Important:
-- Put your OpenAI key into a `.env` file or export `OPENAI_API_KEY` in your shell.
-- The backend will try to call the OpenAI API. If OpenAI is unreachable, it falls back to simulated outputs so you can still test the UI.
+**Features:**
+- **FastAPI Backend** with:
+  - OpenAI Whisper ASR (speech-to-text)
+  - OpenAI LLM classification (Scam / Suspicious / Safe)
+  - Offline fallback (faster-whisper + heuristic classification)
+- **React Frontend** (Vite)
+- **Docker Compose** support for running backend + frontend together
+- WebSocket alerts for real-time updates
 
-Run locally (without Docker):
-1) Backend
-   cd backend
-   python -m venv venv
-   source venv/bin/activate   # Windows: .\venv\Scripts\Activate.ps1
-   pip install -r requirements.txt
-   uvicorn main:app --reload --host 0.0.0.0 --port 8000
+---
 
-2) Frontend
-   cd frontend
-   npm install
-   npm run dev
+## ⚙️ Requirements
+- Python **3.9+**
+- Node.js **16+**
+- (Optional) **Docker & Docker Compose**
+- OpenAI API key (**paid account recommended** for transcription/classification)
 
-Run with Docker:
-- Create a .env with OPENAI_API_KEY=sk-...
-- docker compose up --build
+---
+
+
+---
+
+## 🔑 Environment Variables
+Create a `.env` file **inside** the backend
+cd backend
+python -m venv venv
+source venv/bin/activate        # Windows: .\venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+Backend will be available at:
+➡️ http://127.0.0.1:8000
+Swagger Docs:
+➡️ http://127.0.0.1:8000/docs
+
+cd frontend
+npm install
+npm run dev
+
+Frontend will be available at:
+➡️ http://127.0.0.1:5173
+
+
+
 
