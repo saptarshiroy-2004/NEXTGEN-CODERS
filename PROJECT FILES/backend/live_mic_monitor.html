@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Scam Shield - Live Microphone Monitor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .controls {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        .mic-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .mic-button {
+            width: 80px;
+            height: 80px;
+            border: none;
+            border-radius: 50%;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px 0 rgba(31, 38, 135, 0.4);
+        }
+        .mic-start {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+        .mic-start:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px 0 rgba(76, 175, 80, 0.4);
+        }
+        .mic-stop {
+            background: linear-gradient(45deg, #f44336, #da190b);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        .mic-stop:hover {
+            transform: scale(1.1);
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(244, 67, 54, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+        }
+        .status-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .status-disconnected {
+            background: #f44336;
+            color: white;
+        }
+        .status-connected {
+            background: #4CAF50;
+            color: white;
+        }
+        .status-recording {
+            background: #FF9800;
+            color: white;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.5; }
+        }
+        .audio-visualizer {
+            width: 200px;
+            height: 40px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+        .visualizer-bar {
+            width: 4px;
+            background: #4CAF50;
+            border-radius: 2px;
+            transition: height 0.1s ease;
+        }
+        .risk-section {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+        .risk-meter {
+            background: rgba(0,0,0,0.3);
+            height: 40px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 15px 0;
+            position: relative;
+        }
+        .risk-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .risk-low { background: linear-gradient(45deg, #4CAF50, #8BC34A); }
+        .risk-medium { background: linear-gradient(45deg, #FF9800, #FFC107); }
+        .risk-high { background: linear-gradient(45deg, #FF5722, #F44336); }
+        .risk-critical { 
+            background: linear-gradient(45deg, #8B0000, #FF0000);
+            animation: flashCritical 1s infinite;
+        }
+        @keyframes flashCritical {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.7; }
+        }
+        .alert-banner {
+            background: linear-gradient(45deg, #f44336, #FF5722);
+            border: 2px solid #ffeb3b;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            display: none;
+            animation: alertPulse 1s infinite;
+            box-shadow: 0 4px 20px 0 rgba(244, 67, 54, 0.4);
+        }
+        .alert-critical {
+            animation: flashRed 0.5s infinite;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+        }
+        @keyframes alertPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        @keyframes flashRed {
+            0%, 50% { background: linear-gradient(45deg, #8B0000, #FF0000); }
+            51%, 100% { background: linear-gradient(45deg, #FF0000, #8B0000); }
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        .panel {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        .panel h3 {
+            margin-top: 0;
+            font-size: 1.3rem;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+        .transcript-display, .analysis-display {
+            height: 300px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+        .transcript-word {
+            display: inline;
+            margin: 1px;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+        .transcript-new {
+            background: rgba(76, 175, 80, 0.3);
+            color: #81C784;
+        }
+        .transcript-risky {
+            background: rgba(244, 67, 54, 0.3);
+            color: #EF5350;
+            font-weight: bold;
+        }
+        .log-panel {
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            border-radius: 15px;
+            height: 250px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 8px;
+            border-radius: 5px;
+            border-left: 3px solid;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        .log-info { border-color: #2196F3; background: rgba(33, 150, 243, 0.1); }
+        .log-warning { border-color: #FF9800; background: rgba(255, 152, 0, 0.1); }
+        .log-error { border-color: #f44336; background: rgba(244, 67, 54, 0.1); }
+        .log-success { border-color: #4CAF50; background: rgba(76, 175, 80, 0.1); }
+        
+        .settings {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .setting-item label {
+            font-size: 14px;
+        }
+        .setting-item input, .setting-item select {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 5px;
+            padding: 5px 10px;
+            color: white;
+            width: 120px;
+        }
+        .setting-item input:focus, .setting-item select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .mic-button {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            .status-section {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Voice Scam Shield</h1>
+            <p>Live Microphone Monitoring with Real-time Fraud Detection</p>
+        </div>
+
+        <div class="controls">
+            <div class="mic-section">
+                <button id="startMic" class="mic-button mic-start" title="Start Recording">
+                    🎤
+                </button>
+                <button id="stopMic" class="mic-button mic-stop" style="display: none;" title="Stop Recording">
+                    ⏹️
+                </button>
+                
+                <div class="audio-visualizer" id="visualizer">
+                    <!-- Audio visualization bars will be generated here -->
+                </div>
+            </div>
+            
+            <div class="status-section">
+                <div id="connectionStatus" class="status status-disconnected">Disconnected</div>
+                <div id="recordingStatus" class="status status-disconnected">Not Recording</div>
+                <div id="micStatus" class="status status-disconnected">Microphone Off</div>
+            </div>
+        </div>
+
+        <div class="risk-section">
+            <h3>🚨 Real-time Risk Assessment</h3>
+            <div class="risk-meter">
+                <div id="riskFill" class="risk-fill risk-low" style="width: 0%">
+                    SAFE
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <strong id="riskLabel">Risk Level: LOW (0%)</strong>
+            </div>
+        </div>
+
+        <div class="alert-banner" id="alertBanner">
+            <h2 id="alertTitle">🚨 FRAUD ALERT</h2>
+            <p id="alertMessage"></p>
+            <p><strong>Detected Indicators:</strong> <span id="alertIndicators"></span></p>
+            <p><strong>Recommendation:</strong> <span id="alertRecommendation"></span></p>
+        </div>
+
+        <div class="content-grid">
+            <div class="panel">
+                <h3>📝 Live Transcript</h3>
+                <div id="transcript" class="transcript-display">
+                    <em style="opacity: 0.7;">Start recording to see live transcription...</em>
+                </div>
+                
+                <div class="settings">
+                    <h4 style="margin-top: 0;">⚙️ Audio Settings</h4>
+                    <div class="setting-item">
+                        <label>Sensitivity:</label>
+                        <input type="range" id="sensitivity" min="0.1" max="1.0" step="0.1" value="0.5">
+                    </div>
+                    <div class="setting-item">
+                        <label>Chunk Size (ms):</label>
+                        <input type="number" id="chunkSize" value="3000" min="1000" max="10000" step="500">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h3>🔍 Fraud Analysis</h3>
+                <div id="analysis" class="analysis-display">
+                    <em style="opacity: 0.7;">Analysis results will appear here...</em>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>📊 System Log</h3>
+            <div id="systemLog" class="log-panel">
+                <div class="log-entry log-info">
+                    <strong>[READY]</strong> Voice Scam Shield initialized and ready to monitor
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class LiveMicrophoneMonitor {
+            constructor() {
+                this.isRecording = false;
+                this.mediaRecorder = null;
+                this.audioContext = null;
+                this.analyser = null;
+                this.microphone = null;
+                this.websocket = null;
+                this.sessionId = null;
+                this.audioChunks = [];
+                this.visualizerBars = [];
+                this.accumulatedTranscript = "";
+                
+                this.initializeUI();
+                this.initializeVisualizer();
+                this.setupEventListeners();
+            }
+
+            initializeUI() {
+                this.elements = {
+                    startBtn: document.getElementById('startMic'),
+                    stopBtn: document.getElementById('stopMic'),
+                    connectionStatus: document.getElementById('connectionStatus'),
+                    recordingStatus: document.getElementById('recordingStatus'),
+                    micStatus: document.getElementById('micStatus'),
+                    transcript: document.getElementById('transcript'),
+                    analysis: document.getElementById('analysis'),
+                    alertBanner: document.getElementById('alertBanner'),
+                    riskFill: document.getElementById('riskFill'),
+                    riskLabel: document.getElementById('riskLabel'),
+                    systemLog: document.getElementById('systemLog')
+                };
+            }
+
+            initializeVisualizer() {
+                const visualizer = document.getElementById('visualizer');
+                for (let i = 0; i < 20; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'visualizer-bar';
+                    bar.style.height = '5px';
+                    visualizer.appendChild(bar);
+                    this.visualizerBars.push(bar);
+                }
+            }
+
+            setupEventListeners() {
+                this.elements.startBtn.addEventListener('click', () => this.startRecording());
+                this.elements.stopBtn.addEventListener('click', () => this.stopRecording());
+            }
+
+            log(message, type = 'info') {
+                const entry = document.createElement('div');
+                entry.className = `log-entry log-${type}`;
+                entry.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${message}`;
+                this.elements.systemLog.appendChild(entry);
+                this.elements.systemLog.scrollTop = this.elements.systemLog.scrollHeight;
+                console.log(`[${type.toUpperCase()}] ${message}`);
+            }
+
+            async connectWebSocket() {
+                try {
+                    this.websocket = new WebSocket('ws://localhost:8000/ws/live-fraud-monitor');
+                    
+                    this.websocket.onopen = () => {
+                        this.elements.connectionStatus.textContent = 'Connected';
+                        this.elements.connectionStatus.className = 'status status-connected';
+                        this.log('Connected to fraud monitoring service', 'success');
+                        
+                        // Start transcription service
+                        this.websocket.send(JSON.stringify({
+                            type: 'start_transcription'
+                        }));
+                    };
+
+                    this.websocket.onmessage = (event) => {
+                        this.handleWebSocketMessage(JSON.parse(event.data));
+                    };
+
+                    this.websocket.onclose = () => {
+                        this.elements.connectionStatus.textContent = 'Disconnected';
+                        this.elements.connectionStatus.className = 'status status-disconnected';
+                        this.log('Disconnected from monitoring service', 'warning');
+                    };
+
+                    this.websocket.onerror = (error) => {
+                        this.log(`WebSocket error: ${error}`, 'error');
+                    };
+                    
+                } catch (error) {
+                    this.log(`Failed to connect: ${error.message}`, 'error');
+                }
+            }
+
+            handleWebSocketMessage(data) {
+                switch(data.type) {
+                    case 'session_started':
+                        this.sessionId = data.session_id;
+                        this.log(`Session started: ${this.sessionId}`, 'success');
+                        break;
+
+                    case 'transcription_started':
+                        this.log('Live transcription and fraud monitoring active', 'success');
+                        break;
+
+                    case 'live_transcription':
+                        this.updateTranscript(data.segment);
+                        break;
+
+                    case 'context_analysis':
+                        this.updateAnalysis(data);
+                        this.updateRiskMeter(data.risk_score, data.risk_level);
+                        break;
+
+                    case 'fraud_alert':
+                        this.showAlert(data.alert);
+                        break;
+
+                    case 'session_ended':
+                        this.log('Monitoring session completed', 'info');
+                        this.showFinalReport(data.final_report);
+                        break;
+
+                    case 'error':
+                        this.log(`Error: ${data.message}`, 'error');
+                        break;
+                }
+            }
+
+            async startRecording() {
+                try {
+                    this.log('Requesting microphone access...', 'info');
+                    
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            autoGainControl: true,
+                            channelCount: 1,
+                            sampleRate: 16000
+                        }
+                    });
+
+                    this.log('Microphone access granted', 'success');
+                    this.elements.micStatus.textContent = 'Microphone On';
+                    this.elements.micStatus.className = 'status status-connected';
+
+                    // Setup audio context for visualization
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.analyser = this.audioContext.createAnalyser();
+                    this.microphone = this.audioContext.createMediaStreamSource(stream);
+                    this.microphone.connect(this.analyser);
+                    this.analyser.fftSize = 256;
+                    
+                    // Setup MediaRecorder for audio capture
+                    this.mediaRecorder = new MediaRecorder(stream, {
+                        mimeType: 'audio/webm;codecs=opus'
+                    });
+
+                    this.mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            this.audioChunks.push(event.data);
+                            this.processAudioChunk(event.data);
+                        }
+                    };
+
+                    this.mediaRecorder.onstop = () => {
+                        this.log('Recording stopped', 'info');
+                    };
+
+                    // Connect to WebSocket
+                    await this.connectWebSocket();
+                    
+                    // Start recording
+                    const chunkSize = parseInt(document.getElementById('chunkSize').value);
+                    this.mediaRecorder.start(chunkSize); // Record in chunks
+                    this.isRecording = true;
+
+                    // Update UI
+                    this.elements.startBtn.style.display = 'none';
+                    this.elements.stopBtn.style.display = 'block';
+                    this.elements.recordingStatus.textContent = 'Recording';
+                    this.elements.recordingStatus.className = 'status status-recording';
+
+                    // Start visualization
+                    this.startVisualization();
+                    
+                    this.log('Live recording and monitoring started', 'success');
+
+                } catch (error) {
+                    this.log(`Failed to start recording: ${error.message}`, 'error');
+                    alert(`Microphone access denied or not available: ${error.message}`);
+                }
+            }
+
+            stopRecording() {
+                if (this.mediaRecorder && this.isRecording) {
+                    this.mediaRecorder.stop();
+                    this.isRecording = false;
+
+                    // Stop all tracks
+                    if (this.mediaRecorder.stream) {
+                        this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                    }
+
+                    // Close audio context
+                    if (this.audioContext) {
+                        this.audioContext.close();
+                    }
+
+                    // Close WebSocket
+                    if (this.websocket) {
+                        this.websocket.send(JSON.stringify({ type: 'stop' }));
+                        setTimeout(() => {
+                            this.websocket.close();
+                        }, 1000);
+                    }
+
+                    // Update UI
+                    this.elements.startBtn.style.display = 'block';
+                    this.elements.stopBtn.style.display = 'none';
+                    this.elements.recordingStatus.textContent = 'Not Recording';
+                    this.elements.recordingStatus.className = 'status status-disconnected';
+                    this.elements.micStatus.textContent = 'Microphone Off';
+                    this.elements.micStatus.className = 'status status-disconnected';
+
+                    // Reset visualization
+                    this.visualizerBars.forEach(bar => {
+                        bar.style.height = '5px';
+                    });
+
+                    this.log('Recording stopped and session ended', 'info');
+                }
+            }
+
+            async processAudioChunk(audioBlob) {
+                if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+                    try {
+                        // Convert blob to base64
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            const base64Audio = reader.result.split(',')[1];
+                            
+                            // Send to server for processing
+                            this.websocket.send(JSON.stringify({
+                                type: 'audio_chunk',
+                                data: base64Audio,
+                                timestamp: new Date().toISOString()
+                            }));
+                        };
+                        reader.readAsDataURL(audioBlob);
+                        
+                    } catch (error) {
+                        this.log(`Audio processing error: ${error.message}`, 'error');
+                    }
+                }
+            }
+
+            startVisualization() {
+                const bufferLength = this.analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+
+                const animate = () => {
+                    if (!this.isRecording) return;
+
+                    this.analyser.getByteFrequencyData(dataArray);
+
+                    // Update visualizer bars
+                    for (let i = 0; i < this.visualizerBars.length; i++) {
+                        const index = Math.floor(i * bufferLength / this.visualizerBars.length);
+                        const value = dataArray[index];
+                        const height = Math.max(5, (value / 255) * 35);
+                        this.visualizerBars[i].style.height = height + 'px';
+                        
+                        // Color based on intensity
+                        if (value > 200) {
+                            this.visualizerBars[i].style.background = '#f44336';
+                        } else if (value > 100) {
+                            this.visualizerBars[i].style.background = '#FF9800';
+                        } else {
+                            this.visualizerBars[i].style.background = '#4CAF50';
+                        }
+                    }
+
+                    requestAnimationFrame(animate);
+                };
+
+                animate();
+            }
+
+            updateTranscript(segment) {
+                if (segment && segment.text) {
+                    this.accumulatedTranscript += " " + segment.text;
+                    
+                    // Highlight risky words
+                    const riskyWords = ['urgent', 'immediate', 'suspended', 'verify', 'account', 'security', 'bank', 'credit card', 'social security'];
+                    let html = this.accumulatedTranscript;
+                    
+                    riskyWords.forEach(word => {
+                        const regex = new RegExp(`\\b${word}\\b`, 'gi');
+                        html = html.replace(regex, `<span class="transcript-risky">${word}</span>`);
+                    });
+
+                    this.elements.transcript.innerHTML = html;
+                    this.elements.transcript.scrollTop = this.elements.transcript.scrollHeight;
+                }
+            }
+
+            updateAnalysis(data) {
+                const analysisHTML = `
+                    <div style="border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 15px; margin-bottom: 15px;">
+                        <strong>Risk Level:</strong> <span style="color: ${this.getRiskColor(data.risk_level)}">${data.risk_level}</span><br>
+                        <strong>Risk Score:</strong> ${(data.risk_score * 100).toFixed(1)}%<br>
+                        <strong>Confidence:</strong> ${(data.confidence * 100).toFixed(1)}%<br>
+                        <strong>Classification:</strong> ${data.label}
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <strong>Key Fraud Indicators:</strong><br>
+                        ${data.key_indicators.map(indicator => `<span style="background: rgba(244,67,54,0.3); padding: 2px 6px; border-radius: 3px; margin: 2px; display: inline-block;">${indicator}</span>`).join('')}
+                    </div>
+                    
+                    <div>
+                        <strong>Recommendation:</strong><br>
+                        <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-top: 8px;">
+                            ${data.recommendation}
+                        </div>
+                    </div>
+                `;
+                
+                this.elements.analysis.innerHTML = analysisHTML;
+            }
+
+            updateRiskMeter(riskScore, riskLevel) {
+                const percentage = Math.round(riskScore * 100);
+                this.elements.riskFill.style.width = percentage + '%';
+                this.elements.riskFill.className = `risk-fill risk-${riskLevel.toLowerCase()}`;
+                this.elements.riskFill.textContent = riskLevel;
+                this.elements.riskLabel.textContent = `Risk Level: ${riskLevel} (${percentage}%)`;
+            }
+
+            showAlert(alert) {
+                this.elements.alertBanner.style.display = 'block';
+                this.elements.alertBanner.className = `alert-banner ${alert.severity === 'CRITICAL' ? 'alert-critical' : ''}`;
+                
+                document.getElementById('alertTitle').textContent = `🚨 ${alert.severity} RISK DETECTED`;
+                document.getElementById('alertMessage').textContent = alert.message;
+                document.getElementById('alertIndicators').textContent = alert.indicators.join(', ');
+                document.getElementById('alertRecommendation').textContent = alert.recommended_action;
+                
+                // Play alert sound
+                this.playAlertSound(alert.severity);
+                
+                this.log(`${alert.severity} ALERT: ${alert.message}`, 'error');
+                
+                // Auto-hide after 15 seconds for non-critical alerts
+                if (alert.severity !== 'CRITICAL') {
+                    setTimeout(() => {
+                        this.elements.alertBanner.style.display = 'none';
+                    }, 15000);
+                }
+            }
+
+            showFinalReport(report) {
+                const reportHTML = `
+                    <div style="border: 2px solid #4CAF50; padding: 15px; border-radius: 10px; background: rgba(76,175,80,0.1); margin-top: 15px;">
+                        <h4>📊 Session Summary</h4>
+                        <strong>Duration:</strong> ${report.duration}<br>
+                        <strong>Total Alerts:</strong> ${report.total_alerts}<br>
+                        <strong>Final Risk Level:</strong> ${report.final_risk_level}<br>
+                        <strong>Final Risk Score:</strong> ${(report.final_risk_score * 100).toFixed(1)}%
+                    </div>
+                `;
+                this.elements.analysis.innerHTML += reportHTML;
+            }
+
+            getRiskColor(riskLevel) {
+                switch(riskLevel) {
+                    case 'LOW': return '#4CAF50';
+                    case 'MEDIUM': return '#FF9800';
+                    case 'HIGH': return '#FF5722';
+                    case 'CRITICAL': return '#f44336';
+                    default: return '#ffffff';
+                }
+            }
+
+            playAlertSound(severity) {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                if (severity === 'CRITICAL') {
+                    // Play urgent beeping
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(() => {
+                            const oscillator = audioContext.createOscillator();
+                            const gainNode = audioContext.createGain();
+                            
+                            oscillator.connect(gainNode);
+                            gainNode.connect(audioContext.destination);
+                            
+                            oscillator.frequency.value = 880; // Higher pitch for critical
+                            gainNode.gain.value = 0.3;
+                            
+                            oscillator.start();
+                            oscillator.stop(audioContext.currentTime + 0.15);
+                        }, i * 200);
+                    }
+                } else if (severity === 'HIGH') {
+                    // Play warning tone
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = 600;
+                    gainNode.gain.value = 0.2;
+                    
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.8);
+                }
+            }
+        }
+
+        // Initialize the application when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const monitor = new LiveMicrophoneMonitor();
+            
+            // Add browser compatibility check
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                monitor.log('Microphone access not supported in this browser', 'error');
+                alert('Your browser does not support microphone access. Please use Chrome, Firefox, or Edge.');
+            }
+        });
+    </script>
+</body>
+</html>

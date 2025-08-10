@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ Voice Scam Shield - Advanced Fraud Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto 1fr auto;
+            gap: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1em;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.connected { background: #4CAF50; }
+        .status-indicator.recording { background: #ff4444; }
+        .status-indicator.analyzing { background: #FFC107; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .risk-dashboard {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .main-content {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .transcript-panel {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .analysis-panel {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .button.recording {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            animation: recordingPulse 1s infinite;
+        }
+
+        .button.stop {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+        }
+
+        .button.simulation {
+            background: linear-gradient(45deg, #9c27b0, #7b1fa2);
+        }
+
+        @keyframes recordingPulse {
+            0%, 100% { box-shadow: 0 4px 15px rgba(255, 68, 68, 0.4); }
+            50% { box-shadow: 0 4px 25px rgba(255, 68, 68, 0.8); }
+        }
+
+        .risk-meter {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+        }
+
+        .risk-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            background: conic-gradient(
+                from 0deg,
+                #4CAF50 0deg 108deg,
+                #FFC107 108deg 216deg,
+                #FF5722 216deg 324deg,
+                #B71C1C 324deg 360deg
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .risk-inner {
+            width: 70%;
+            height: 70%;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .risk-score {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .risk-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .risk-needle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 2px;
+            height: 80px;
+            background: white;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            transition: transform 0.5s ease;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .audio-visualizer {
+            height: 60px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            margin: 15px 0;
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            gap: 2px;
+            padding: 5px;
+        }
+
+        .audio-bar {
+            width: 4px;
+            background: linear-gradient(to top, #4CAF50, #8BC34A);
+            border-radius: 2px;
+            transition: height 0.1s ease;
+        }
+
+        .transcript-content {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+
+        .transcript-segment {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #4CAF50;
+        }
+
+        .transcript-segment.suspicious {
+            border-left-color: #FF9800;
+            background: rgba(255, 152, 0, 0.1);
+        }
+
+        .transcript-segment.dangerous {
+            border-left-color: #F44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+
+        .timestamp {
+            font-size: 0.8em;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .fraud-indicators {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .indicator-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #FF5722;
+        }
+
+        .indicator-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .indicator-confidence {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .detected-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .keyword-tag {
+            background: rgba(244, 67, 54, 0.2);
+            color: #ffcccb;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            border: 1px solid rgba(244, 67, 54, 0.5);
+        }
+
+        .alert-banner {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 20px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            min-width: 300px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .alert-banner.show {
+            transform: translateX(0);
+        }
+
+        .alert-banner.low { background: linear-gradient(45deg, #4CAF50, #45a049); }
+        .alert-banner.medium { background: linear-gradient(45deg, #FF9800, #f57c00); }
+        .alert-banner.high { background: linear-gradient(45deg, #FF5722, #d32f2f); }
+        .alert-banner.critical { 
+            background: linear-gradient(45deg, #B71C1C, #8B0000);
+            animation: criticalFlash 0.5s infinite alternate;
+        }
+
+        @keyframes criticalFlash {
+            0% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        .simulation-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .detailed-analysis {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .analysis-category {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .category-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #FFD700;
+        }
+
+        .category-items {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .category-item {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .recommendation-panel {
+            background: rgba(0, 100, 0, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .recommendation-title {
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .logs-panel {
+            grid-column: 1 / -1;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .log-entry.info { background: rgba(33, 150, 243, 0.2); }
+        .log-entry.warning { background: rgba(255, 152, 0, 0.2); }
+        .log-entry.error { background: rgba(244, 67, 54, 0.2); }
+        .log-entry.success { background: rgba(76, 175, 80, 0.2); }
+
+        .confidence-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #FF5722);
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Voice Scam Shield</h1>
+            <p>Advanced Real-Time Fraud Detection System</p>
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-indicator" id="connectionStatus"></div>
+                    <span id="connectionText">Disconnected</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-indicator" id="recordingStatus"></div>
+                    <span id="recordingText">Not Recording</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-indicator" id="analysisStatus"></div>
+                    <span id="analysisText">Idle</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h2 class="section-title">🎛️ Control Center</h2>
+            
+            <button id="connectBtn" class="button">🔗 Connect to Monitor</button>
+            <button id="startRecordingBtn" class="button" disabled>🎤 Start Recording</button>
+            <button id="stopBtn" class="button stop" disabled>⏹️ Stop Monitoring</button>
+            
+            <div class="audio-visualizer" id="audioVisualizer"></div>
+            
+            <h3>🎭 Simulation Scenarios</h3>
+            <div class="simulation-controls">
+                <button class="button simulation" onclick="simulateScenario('tech_support')">
+                    💻 Tech Support Scam
+                </button>
+                <button class="button simulation" onclick="simulateScenario('bank_fraud')">
+                    🏦 Banking Fraud
+                </button>
+                <button class="button simulation" onclick="simulateScenario('irs_scam')">
+                    📋 IRS Scam
+                </button>
+                <button class="button simulation" onclick="simulateScenario('prize_scam')">
+                    🎁 Prize Scam
+                </button>
+                <button class="button simulation" onclick="simulateScenario('legitimate')">
+                    ✅ Legitimate Call
+                </button>
+            </div>
+        </div>
+
+        <div class="risk-dashboard">
+            <h2 class="section-title">⚠️ Risk Assessment</h2>
+            
+            <div class="risk-meter">
+                <div class="risk-circle">
+                    <div class="risk-inner">
+                        <div class="risk-score" id="riskScore">0%</div>
+                        <div class="risk-label" id="riskLabel">SAFE</div>
+                    </div>
+                    <div class="risk-needle" id="riskNeedle"></div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="alertCount">0</div>
+                    <div class="stat-label">Total Alerts</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="keywordCount">0</div>
+                    <div class="stat-label">Fraud Keywords</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="confidenceScore">0%</div>
+                    <div class="stat-label">AI Confidence</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="sessionDuration">0:00</div>
+                    <div class="stat-label">Call Duration</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="transcript-panel">
+                <h2 class="section-title">📝 Live Transcript</h2>
+                <div class="transcript-content" id="transcriptContent">
+                    <div style="text-align: center; opacity: 0.6; margin-top: 50px;">
+                        🎤 Waiting for audio input...
+                    </div>
+                </div>
+            </div>
+
+            <div class="analysis-panel">
+                <h2 class="section-title">🔍 Fraud Analysis</h2>
+                
+                <div class="detailed-analysis" id="detailedAnalysis">
+                    <div class="analysis-category">
+                        <div class="category-title">🚨 Detected Threats</div>
+                        <div class="category-items" id="detectedThreats">
+                            <div class="category-item">No threats detected</div>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-category">
+                        <div class="category-title">🔑 Suspicious Keywords</div>
+                        <div class="detected-keywords" id="suspiciousKeywords">
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-category">
+                        <div class="category-title">📊 Risk Factors</div>
+                        <div class="category-items" id="riskFactors">
+                            <div class="category-item">Analysis pending...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recommendation-panel" id="recommendationPanel">
+                    <div class="recommendation-title">💡 Recommendations</div>
+                    <div id="recommendations">Monitor the conversation for suspicious patterns.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="logs-panel">
+            <h2 class="section-title">📋 System Logs</h2>
+            <div id="systemLogs"></div>
+        </div>
+    </div>
+
+    <div class="alert-banner" id="alertBanner">
+        <div id="alertContent"></div>
+    </div>
+
+    <!-- Audio elements for sound effects -->
+    <audio id="alertSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEe" type="audio/wav">
+    </audio>
+    
+    <audio id="warningSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRuQAAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAZGF0YcAAAADAAAAAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=" type="audio/wav">
+    </audio>
+
+    <script>
+        let websocket = null;
+        let mediaRecorder = null;
+        let audioStream = null;
+        let sessionId = null;
+        let isRecording = false;
+        let audioContext = null;
+        let analyser = null;
+        let sessionStartTime = null;
+        let alertCount = 0;
+        let keywordCount = 0;
+
+        // Audio visualization
+        function initAudioVisualizer() {
+            const visualizer = document.getElementById('audioVisualizer');
+            visualizer.innerHTML = '';
+            
+            for (let i = 0; i < 50; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'audio-bar';
+                bar.style.height = '5px';
+                visualizer.appendChild(bar);
+            }
+        }
+
+        function updateAudioVisualizer() {
+            if (!analyser) return;
+            
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(dataArray);
+            
+            const bars = document.querySelectorAll('.audio-bar');
+            const step = Math.floor(dataArray.length / bars.length);
+            
+            bars.forEach((bar, index) => {
+                const value = dataArray[index * step];
+                const height = Math.max(5, (value / 255) * 50);
+                bar.style.height = height + 'px';
+            });
+        }
+
+        // Connection management
+        async function connectToServer() {
+            try {
+                websocket = new WebSocket('ws://localhost:8000/ws/live-fraud-monitor');
+                
+                websocket.onopen = function(event) {
+                    addLog('Connected to fraud monitoring server', 'success');
+                    updateConnectionStatus(true);
+                    document.getElementById('startRecordingBtn').disabled = false;
+                };
+                
+                websocket.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    handleServerMessage(data);
+                };
+                
+                websocket.onclose = function(event) {
+                    addLog('Connection closed', 'warning');
+                    updateConnectionStatus(false);
+                    resetUI();
+                };
+                
+                websocket.onerror = function(error) {
+                    addLog('Connection error: ' + error, 'error');
+                    updateConnectionStatus(false);
+                };
+                
+            } catch (error) {
+                addLog('Failed to connect: ' + error.message, 'error');
+            }
+        }
+
+        function handleServerMessage(data) {
+            switch (data.type) {
+                case 'session_started':
+                    sessionId = data.session_id;
+                    sessionStartTime = new Date();
+                    addLog('Monitoring session started: ' + sessionId, 'success');
+                    break;
+                    
+                case 'live_transcription':
+                    updateTranscript(data.segment, data.accumulated_transcript);
+                    break;
+                    
+                case 'context_analysis':
+                    updateRiskAssessment(data);
+                    updateDetailedAnalysis(data);
+                    break;
+                    
+                case 'fraud_alert':
+                    handleFraudAlert(data.alert);
+                    break;
+                    
+                case 'session_ended':
+                    addLog('Session ended. Final report generated.', 'info');
+                    break;
+                    
+                case 'error':
+                    addLog('Error: ' + data.message, 'error');
+                    break;
+            }
+        }
+
+        // Audio recording
+        async function startRecording() {
+            try {
+                audioStream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 44100
+                    }
+                });
+                
+                // Setup audio context for visualization
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaStreamSource(audioStream);
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                source.connect(analyser);
+                
+                // Start visualization
+                function animate() {
+                    if (isRecording) {
+                        updateAudioVisualizer();
+                        requestAnimationFrame(animate);
+                    }
+                }
+                animate();
+                
+                mediaRecorder = new MediaRecorder(audioStream, {
+                    mimeType: 'audio/webm;codecs=opus'
+                });
+                
+                mediaRecorder.ondataavailable = function(event) {
+                    if (event.data.size > 0 && websocket && websocket.readyState === WebSocket.OPEN) {
+                        const reader = new FileReader();
+                        reader.onloadend = function() {
+                            const base64data = reader.result.split(',')[1];
+                            websocket.send(JSON.stringify({
+                                type: 'audio_chunk',
+                                data: base64data
+                            }));
+                        };
+                        reader.readAsDataURL(event.data);
+                    }
+                };
+                
+                mediaRecorder.start(1000); // Send chunks every second
+                isRecording = true;
+                
+                updateRecordingStatus(true);
+                document.getElementById('startRecordingBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                
+                addLog('Recording started', 'success');
+                
+            } catch (error) {
+                addLog('Failed to start recording: ' + error.message, 'error');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                if (audioStream) {
+                    audioStream.getTracks().forEach(track => track.stop());
+                }
+                
+                if (audioContext) {
+                    audioContext.close();
+                }
+                
+                updateRecordingStatus(false);
+                document.getElementById('startRecordingBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+                
+                // End session
+                if (websocket && websocket.readyState === WebSocket.OPEN) {
+                    websocket.send(JSON.stringify({ type: 'stop' }));
+                }
+                
+                addLog('Recording stopped', 'warning');
+            }
+        }
+
+        // UI Updates
+        function updateConnectionStatus(connected) {
+            const indicator = document.getElementById('connectionStatus');
+            const text = document.getElementById('connectionText');
+            
+            if (connected) {
+                indicator.className = 'status-indicator connected';
+                text.textContent = 'Connected';
+            } else {
+                indicator.className = 'status-indicator';
+                text.textContent = 'Disconnected';
+            }
+        }
+
+        function updateRecordingStatus(recording) {
+            const indicator = document.getElementById('recordingStatus');
+            const text = document.getElementById('recordingText');
+            const button = document.getElementById('startRecordingBtn');
+            
+            if (recording) {
+                indicator.className = 'status-indicator recording';
+                text.textContent = 'Recording';
+                button.className = 'button recording';
+                button.textContent = '🔴 Recording...';
+            } else {
+                indicator.className = 'status-indicator';
+                text.textContent = 'Not Recording';
+                button.className = 'button';
+                button.textContent = '🎤 Start Recording';
+            }
+        }
+
+        function updateTranscript(segment, fullTranscript) {
+            const container = document.getElementById('transcriptContent');
+            
+            // Determine segment risk level based on content
+            let riskClass = '';
+            const text = segment.text.toLowerCase();
+            
+            const highRiskKeywords = ['urgent', 'immediate', 'suspended', 'verify account', 'send money'];
+            const mediumRiskKeywords = ['security', 'bank', 'credit card', 'personal information'];
+            
+            if (highRiskKeywords.some(keyword => text.includes(keyword))) {
+                riskClass = 'dangerous';
+            } else if (mediumRiskKeywords.some(keyword => text.includes(keyword))) {
+                riskClass = 'suspicious';
+            }
+            
+            const transcriptSegment = document.createElement('div');
+            transcriptSegment.className = `transcript-segment ${riskClass}`;
+            transcriptSegment.innerHTML = `
+                <div class="timestamp">${new Date(segment.timestamp).toLocaleTimeString()}</div>
+                <div>${segment.text}</div>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: ${segment.confidence * 100}%"></div>
+                </div>
+            `;
+            
+            container.appendChild(transcriptSegment);
+            container.scrollTop = container.scrollHeight;
+            
+            // Update session duration
+            if (sessionStartTime) {
+                const duration = Math.floor((new Date() - sessionStartTime) / 1000);
+                const minutes = Math.floor(duration / 60);
+                const seconds = duration % 60;
+                document.getElementById('sessionDuration').textContent = 
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        function updateRiskAssessment(data) {
+            const riskScore = Math.round(data.risk_score * 100);
+            const needle = document.getElementById('riskNeedle');
+            const scoreElement = document.getElementById('riskScore');
+            const labelElement = document.getElementById('riskLabel');
+            const confidenceElement = document.getElementById('confidenceScore');
+            
+            // Update risk meter
+            scoreElement.textContent = riskScore + '%';
+            labelElement.textContent = data.risk_level;
+            confidenceElement.textContent = Math.round(data.confidence * 100) + '%';
+            
+            // Update needle position (0-360 degrees)
+            const angle = (riskScore / 100) * 360;
+            needle.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
+            
+            // Update analysis status
+            const indicator = document.getElementById('analysisStatus');
+            const text = document.getElementById('analysisText');
+            
+            indicator.className = 'status-indicator analyzing';
+            text.textContent = 'Analyzing';
+        }
+
+        function updateDetailedAnalysis(data) {
+            const threatsElement = document.getElementById('detectedThreats');
+            const keywordsElement = document.getElementById('suspiciousKeywords');
+            const factorsElement = document.getElementById('riskFactors');
+            const recommendationsElement = document.getElementById('recommendations');
+            
+            // Update threats
+            if (data.key_indicators && data.key_indicators.length > 0) {
+                threatsElement.innerHTML = data.key_indicators
+                    .map(indicator => `<div class="category-item">⚠️ ${indicator}</div>`)
+                    .join('');
+                keywordCount = data.key_indicators.length;
+            } else {
+                threatsElement.innerHTML = '<div class="category-item">No threats detected</div>';
+            }
+            
+            // Update keywords
+            if (data.key_indicators) {
+                keywordsElement.innerHTML = data.key_indicators
+                    .map(keyword => `<span class="keyword-tag">${keyword}</span>`)
+                    .join('');
+            }
+            
+            // Update risk factors
+            const riskFactors = [
+                `Risk Level: ${data.risk_level}`,
+                `Confidence: ${Math.round(data.confidence * 100)}%`,
+                `Classification: ${data.label}`,
+                `Transcript Length: ${data.transcript_length} words`
+            ];
+            
+            factorsElement.innerHTML = riskFactors
+                .map(factor => `<div class="category-item">📊 ${factor}</div>`)
+                .join('');
+            
+            // Update recommendations
+            recommendationsElement.textContent = data.recommendation || 
+                'Continue monitoring for suspicious patterns.';
+            
+            // Update stats
+            document.getElementById('keywordCount').textContent = keywordCount;
+        }
+
+        function handleFraudAlert(alert) {
+            alertCount++;
+            document.getElementById('alertCount').textContent = alertCount;
+            
+            // Show alert banner
+            showAlertBanner(alert);
+            
+            // Play sound
+            playAlertSound(alert.severity);
+            
+            // Add to logs
+            addLog(`${alert.severity} ALERT: ${alert.message}`, 'error');
+            
+            // Flash screen for critical alerts
+            if (alert.severity === 'CRITICAL') {
+                document.body.style.animation = 'criticalFlash 0.5s 3';
+                setTimeout(() => {
+                    document.body.style.animation = '';
+                }, 1500);
+            }
+        }
+
+        function showAlertBanner(alert) {
+            const banner = document.getElementById('alertBanner');
+            const content = document.getElementById('alertContent');
+            
+            content.innerHTML = `
+                <div style="font-size: 1.2em; margin-bottom: 8px;">
+                    🚨 ${alert.severity} RISK DETECTED
+                </div>
+                <div style="margin-bottom: 8px;">${alert.message}</div>
+                <div style="font-size: 0.9em; opacity: 0.9;">
+                    Confidence: ${Math.round(alert.confidence * 100)}% | 
+                    Risk Score: ${Math.round(alert.risk_score * 100)}%
+                </div>
+                <div style="font-size: 0.8em; margin-top: 5px;">
+                    Action: ${alert.recommended_action}
+                </div>
+            `;
+            
+            banner.className = `alert-banner ${alert.severity.toLowerCase()} show`;
+            
+            setTimeout(() => {
+                banner.className = `alert-banner ${alert.severity.toLowerCase()}`;
+            }, 5000);
+        }
+
+        function playAlertSound(severity) {
+            if (severity === 'CRITICAL' || severity === 'HIGH') {
+                document.getElementById('alertSound').play().catch(() => {});
+            } else {
+                document.getElementById('warningSound').play().catch(() => {});
+            }
+        }
+
+        function addLog(message, type = 'info') {
+            const logsContainer = document.getElementById('systemLogs');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            
+            logsContainer.appendChild(logEntry);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+            
+            // Keep only last 50 log entries
+            while (logsContainer.children.length > 50) {
+                logsContainer.removeChild(logsContainer.firstChild);
+            }
+        }
+
+        function resetUI() {
+            sessionId = null;
+            sessionStartTime = null;
+            alertCount = 0;
+            keywordCount = 0;
+            
+            document.getElementById('riskScore').textContent = '0%';
+            document.getElementById('riskLabel').textContent = 'SAFE';
+            document.getElementById('riskNeedle').style.transform = 'translate(-50%, -100%) rotate(0deg)';
+            document.getElementById('alertCount').textContent = '0';
+            document.getElementById('keywordCount').textContent = '0';
+            document.getElementById('confidenceScore').textContent = '0%';
+            document.getElementById('sessionDuration').textContent = '0:00';
+            
+            document.getElementById('transcriptContent').innerHTML = `
+                <div style="text-align: center; opacity: 0.6; margin-top: 50px;">
+                    🎤 Waiting for audio input...
+                </div>
+            `;
+            
+            document.getElementById('startRecordingBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = true;
+        }
+
+        // Simulation scenarios
+        const simulationScenarios = {
+            tech_support: [
+                "Hello, this is Microsoft technical support calling about your computer.",
+                "We've detected suspicious activity on your Windows computer.",
+                "Your computer has been infected with dangerous malware.",
+                "We need immediate access to fix this critical security issue.",
+                "Please download TeamViewer so we can remotely access your system.",
+                "This is urgent - your personal data could be stolen if we don't act now."
+            ],
+            bank_fraud: [
+                "This is Wells Fargo security department calling about your account.",
+                "We've detected unauthorized transactions on your bank account.",
+                "Your account has been temporarily suspended for security reasons.",
+                "We need to verify your identity to prevent further fraud.",
+                "Please confirm your social security number and account PIN.",
+                "If you don't verify now, your account will be permanently closed."
+            ],
+            irs_scam: [
+                "This is the IRS calling about unpaid taxes on your account.",
+                "You owe $3,847 in back taxes that must be paid immediately.",
+                "A warrant has been issued for your arrest due to tax evasion.",
+                "You must pay with gift cards or face legal action.",
+                "This is your final notice before law enforcement arrives.",
+                "Transfer the money to avoid imprisonment."
+            ],
+            prize_scam: [
+                "Congratulations! You've won $50,000 in our sweepstakes!",
+                "This is your lucky day - you're our grand prize winner!",
+                "To claim your prize, you need to pay processing fees first.",
+                "Send $500 in gift cards to cover the tax and handling charges.",
+                "This offer expires in 24 hours, so act quickly!",
+                "Once you pay the fees, we'll send your winnings immediately."
+            ],
+            legitimate: [
+                "Hello, this is Sarah from your doctor's office calling to confirm your appointment.",
+                "Your appointment is scheduled for tomorrow at 2 PM with Dr. Johnson.",
+                "Please arrive 15 minutes early to complete any necessary paperwork.",
+                "If you need to reschedule, please call us back at your earliest convenience.",
+                "Do you have any questions about your upcoming visit?",
+                "Thank you and we'll see you tomorrow."
+            ]
+        };
+
+        function simulateScenario(scenarioType) {
+            if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+                addLog('Please connect to server first', 'warning');
+                return;
+            }
+            
+            const messages = simulationScenarios[scenarioType];
+            if (!messages) return;
+            
+            addLog(`Starting ${scenarioType.replace('_', ' ')} simulation`, 'info');
+            
+            messages.forEach((message, index) => {
+                setTimeout(() => {
+                    const segment = {
+                        text: message,
+                        confidence: 0.85 + Math.random() * 0.15,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    websocket.send(JSON.stringify({
+                        type: 'simulated_transcript',
+                        segment: segment
+                    }));
+                }, index * 3000); // 3 seconds between messages
+            });
+        }
+
+        // Event listeners
+        document.getElementById('connectBtn').addEventListener('click', connectToServer);
+        document.getElementById('startRecordingBtn').addEventListener('click', startRecording);
+        document.getElementById('stopBtn').addEventListener('click', stopRecording);
+
+        // Initialize UI
+        initAudioVisualizer();
+        addLog('Voice Scam Shield initialized', 'success');
+    </script>
+</body>
+</html>

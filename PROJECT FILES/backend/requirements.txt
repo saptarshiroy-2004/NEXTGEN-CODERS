@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pydub
+aiofiles
+python-dotenv
+numpy
+jinja2
+requests
